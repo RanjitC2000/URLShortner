@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Go URL Shortener</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="flex items-center justify-center h-screen bg-gray-100">
+    <div class="bg-white p-6 rounded-lg shadow-lg w-96 text-center">
+        <h1 class="text-2xl font-bold mb-4">Go URL Shortener</h1>
+        <input id="urlInput" type="text" placeholder="Enter URL" class="w-full p-2 border rounded-lg">
+        <button onclick="shortenUrl()" class="bg-blue-500 text-white px-4 py-2 mt-2 rounded-lg w-full">Shorten</button>
+        <div id="result" class="mt-4 hidden">
+            <input id="shortUrl" class="w-full p-2 border rounded-lg" readonly>
+            <button onclick="copyUrl()" class="bg-green-500 text-white px-3 py-1 mt-2 rounded-lg w-full">Copy</button>
+            <button onclick="openUrl()" class="bg-blue-500 text-white px-3 py-1 mt-2 rounded-lg w-full">Open</button>
+        </div>
+    </div>
+
+    <script>
+        async function shortenUrl() {
+            const url = document.getElementById("urlInput").value;
+            const response = await fetch("/create-short-url", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ 
+                    long_url: url,
+                    user_id: "e0dba740-fc4b-4977-872c-d360239e6b10"
+                }),
+            });
+
+            const data = await response.json();
+            document.getElementById("shortUrl").value = data.short_url;
+            document.getElementById("result").classList.remove("hidden");
+        }
+
+        function copyUrl() {
+            const copyText = document.getElementById("shortUrl");
+            copyText.select();
+            navigator.clipboard.writeText(copyText.value);
+            alert("Copied to clipboard!");
+        }
+        function openUrl() {
+            const url = document.getElementById("shortUrl").value;
+            if (url) {
+                window.open(url, "_blank");
+            }
+        }
+    </script>
+</body>
+</html>
